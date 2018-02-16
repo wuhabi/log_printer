@@ -4,22 +4,22 @@
 LOGSET logsetting;
 LOG loging;
 
-const static char LogLevelText[4][10]={"INFO","DEBUG","WARN","ERROR"};
+const static char LogLevelText[4][10]={"INFO","DEBUG","WARNING","FATAL"};
 
 static char * getdate(char *date);
 
 static unsigned char getcode(char *path) {
-    unsigned char code=255;
-    if(strcmp("INFO",path) == 0)
-        code=1;
-    else if(strcmp("WARN",path) == 0)
-        code=3;
-    else if(strcmp("ERROR",path) == 0)
-        code=4;
-    else if(strcmp("NONE",path) == 0)
-        code=0;
-    else if(strcmp("DEBUG",path) == 0)
-        code=2;
+    unsigned char code = 255;
+    if(strcmp("INFO", path) == 0)
+        code = 1;
+    else if(strcmp("WARNING", path) == 0)
+        code = 3;
+    else if(strcmp("FATAL", path) == 0)
+        code = 4;
+    else if(strcmp("NONE", path) == 0)
+        code = 0;
+    else if(strcmp("DEBUG", path) == 0)
+        code = 2;
     return code;
 }
 
@@ -27,20 +27,20 @@ static unsigned char ReadConfig(char *path) {
     char value[512] = {0x0};
     char data[50] = {0x0};
 
-    FILE *fpath = fopen(path,"r");
+    FILE *fpath = fopen(path, "r");
     if (fpath == NULL)
         return -1;
-    fscanf(fpath,"path=%s\n",value);
+    fscanf(fpath, "path=%s\n", value);
     getdate(data);
-    strcat(data,".log");
-    strcat(value,"/");
-    strcat(value,data);
-    if(strcmp(value,logsetting.filepath)!=0)
+    strcat(data, ".log");
+    strcat(value, "/");
+    strcat(value, data);
+    if(strcmp(value, logsetting.filepath) != 0)
         memcpy(logsetting.filepath,value,strlen(value));
     memset(value,0,sizeof(value));
 
     fscanf(fpath,"level=%s\n",value);
-    logsetting.loglevel=getcode(value);
+    logsetting.loglevel = getcode(value);
     fclose(fpath);
 
     return 0;
@@ -87,7 +87,7 @@ static void settime() {
  * */
 static void PrintfLog(char * fromat, va_list args) {
     int d;
-    char c,*s;
+    char c, *s;
     while(*fromat) {
         switch(*fromat) {
         case 's':
@@ -103,8 +103,9 @@ static void PrintfLog(char * fromat, va_list args) {
             fprintf(loging.logfile,"%c",c);
             break;
         default:
-            if(*fromat!='%'&&*fromat!='\n')
+            if(*fromat!='%'&&*fromat!='\n') {
                 fprintf(loging.logfile,"%c",*fromat);
+            }
             break;
         }
         fromat++;
@@ -116,7 +117,7 @@ static int initlog(unsigned char loglevel) {
     char strdate[30] = {0x0};
     LOGSET *logsetting;
     //获取日志配置信息
-    if((logsetting=getlogset()) == NULL){
+    if((logsetting = getlogset()) == NULL) {
         perror("Get Log Set Fail!");
         return -1;
     }
@@ -135,11 +136,12 @@ static int initlog(unsigned char loglevel) {
         strcat(logsetting->filepath, "/");
         strcat(logsetting->filepath, strdate);
     }
-    memcpy(loging.filepath,logsetting->filepath,MAXFILEPATH);
+    memcpy(loging.filepath, logsetting->filepath, MAXFILEPATH);
     //打开日志文件
-    if (loging.logfile == NULL)
+    if (loging.logfile == NULL) {
         loging.logfile = fopen(loging.filepath,"a+");
-    if (loging.logfile == NULL){
+    }
+    if (loging.logfile == NULL) {
         perror("Open Log File Fail!");
         return -1;
     }
@@ -152,12 +154,12 @@ static int initlog(unsigned char loglevel) {
  *日志写入
  * */
 int LogWrite(unsigned char loglevel,char *fromat,...) {
-    int  rtv = -1;
+    int rtv = -1;
     va_list args;
     
     do {
         //初始化日志
-        if(initlog(loglevel) != 0) {
+        if (initlog(loglevel) != 0) {
             rtv = -1;
             break;
         }
@@ -168,9 +170,10 @@ int LogWrite(unsigned char loglevel,char *fromat,...) {
         //文件刷出
         fflush(loging.logfile);
         //日志关闭
-        if(loging.logfile!=NULL)
+        if (loging.logfile != NULL) {
             fclose(loging.logfile);
-        loging.logfile=NULL;
+        }
+        loging.logfile = NULL;
         rtv = 0;
     } while(0);
     

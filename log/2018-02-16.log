@@ -1,0 +1,8 @@
+[INFO] [2018-02-16 17:29:34] [test.cpp:9] Hello World!
+[INFO] [2018-02-16 17:29:34] Hello World!
+[DEBUG] [2018-02-16 17:29:34] [test.cpp:11] H.e.l.l.o W.o.r.l.d!
+[DEBUG] [2018-02-16 17:29:34] H.e.l.l.o W.o.r.l.d!
+[WARN] [2018-02-16 17:29:34] [test.cpp:13] H e l l o W o r l d!
+[WARN] [2018-02-16 17:29:34] H e l l o W o r l d!
+[ERROR] [2018-02-16 17:29:34] [test.cpp:15] Hallo World!
+[ERROR] [2018-02-16 17:29:34] Hallo World!
